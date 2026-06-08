@@ -36,6 +36,10 @@ yarn-error.log*
 # vercel
 .vercel
 
+# generated assets
+/captures
+/marketing
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts

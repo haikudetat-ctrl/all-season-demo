@@ -4,6 +4,7 @@ import { SendIcon, StarIcon } from 'lucide-react'
 
 import { useAppData } from '@/lib/store'
 import Header from '@/components/header'
+import SettingsDialog from '@/components/settings-dialog'
 import type { Referral } from '@/lib/types'
 import {
   DashboardCard,
@@ -43,7 +44,7 @@ const countyPins: Record<string, { x: number; y: number }> = {
 }
 
 export default function ReferralsPage() {
-  const { data, loaded, updateReferral } = useAppData()
+  const { data, loaded, updateReferral, updateProfile } = useAppData()
 
   if (!loaded || !data) {
     return <LoadingState />
@@ -65,7 +66,10 @@ export default function ReferralsPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      <Header
+        profile={data.profile}
+        settingsButton={<SettingsDialog profile={data.profile} onSave={updateProfile} />}
+      />
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-2 gap-4 mb-6 md:grid-cols-4">
           <MetricCard label="Installed Customers" value={referrals.length} tone="lime" />

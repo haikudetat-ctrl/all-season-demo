@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useAppData } from '@/lib/store'
 import Header from '@/components/header'
+import SettingsDialog from '@/components/settings-dialog'
 import type { Lead } from '@/lib/types'
 import {
   DashboardCard,
@@ -34,7 +35,7 @@ function formatMinutes(mins: number): string {
 }
 
 export default function SpeedPage() {
-  const { data, loaded, updateLead } = useAppData()
+  const { data, loaded, updateLead, updateProfile } = useAppData()
   const [filterRep, setFilterRep] = useState<string>('all')
 
   if (!loaded || !data) {
@@ -88,7 +89,10 @@ export default function SpeedPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      <Header
+        profile={data.profile}
+        settingsButton={<SettingsDialog profile={data.profile} onSave={updateProfile} />}
+      />
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
         <div className="mb-6 flex items-center justify-between gap-4">
           <div>

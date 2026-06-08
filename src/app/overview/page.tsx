@@ -1,7 +1,11 @@
 'use client'
 
+import { useState } from 'react'
 import { useAppData } from '@/lib/store'
 import Header from '@/components/header'
+import ImportLeadsDialog from '@/components/import-dialog'
+import SettingsDialog from '@/components/settings-dialog'
+import BeforeView from '@/components/before-view'
 import {
   DashboardCard,
   DashboardCardContent,
@@ -24,7 +28,8 @@ function timeUntilNoon() {
 }
 
 export default function OverviewPage() {
-  const { data, loaded } = useAppData()
+  const { data, loaded, importLeads, updateProfile } = useAppData()
+  const [showBefore, setShowBefore] = useState(false)
 
   if (!loaded || !data) {
     return <LoadingState />
@@ -70,23 +75,78 @@ export default function OverviewPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      <Header
+        profile={data.profile}
+        settingsButton={
+          <SettingsDialog profile={data.profile} onSave={updateProfile} />
+        }
+      />
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
-        <section className="mb-8 overflow-hidden rounded-lg border border-primary/20 bg-gradient-lime p-6 shadow-solar">
-          <h1 className="text-3xl font-bold text-primary-foreground">
-            {timeUntilNoon()}, Chris
-          </h1>
-          <div className="mt-4 flex flex-wrap gap-3 text-sm text-primary-foreground/80">
-            <SolarBadge tone="navy">{opportunities + consultationsScheduled} active opportunities</SolarBadge>
-            <SolarBadge tone="gold">{proposalsOut} proposals outstanding</SolarBadge>
-            <SolarBadge tone="green">{installsThisWeek} installs this week</SolarBadge>
-            <SolarBadge tone="lime" className="bg-card/70">
-              {formatCurrency(totalPipelineValue + totalProposalsValue)} pipeline value
-            </SolarBadge>
+        <section className="mb-6 overflow-hidden rounded-lg border border-primary/20 bg-gradient-lime p-6 shadow-solar">
+          <div className="flex items-start justify-between">
+            <div>
+              <h1 className="text-3xl font-bold text-primary-foreground">
+                {timeUntilNoon()}, {data.profile.ownerName.split(' ')[0]}
+              </h1>
+              <div className="mt-4 flex flex-wrap gap-3 text-sm text-primary-foreground/80">
+                <SolarBadge tone="navy">{opportunities + consultationsScheduled} active opportunities</SolarBadge>
+                <SolarBadge tone="gold">{proposalsOut} proposals outstanding</SolarBadge>
+                <SolarBadge tone="green">{installsThisWeek} installs this week</SolarBadge>
+                <SolarBadge tone="lime" className="bg-card/70">
+                  {formatCurrency(totalPipelineValue + totalProposalsValue)} pipeline value
+                </SolarBadge>
+              </div>
+            </div>
+            <div className="shrink-0 flex items-center gap-2">
+              <span className="text-xs text-primary-foreground/60 hidden md:inline">{leads.length} leads</span>
+              <button
+                onClick={() => setShowBefore(!showBefore)}
+                className={`inline-flex items-center gap-2 rounded-md border px-3 py-1.5 text-xs font-medium transition-all cursor-pointer ${
+                  showBefore
+                    ? 'border-red/30 bg-red-light text-red'
+                    : 'border-green/20 bg-green-light text-green'
+                }`}
+              >
+                <span className={`w-1.5 h-1.5 rounded-full ${showBefore ? 'bg-red' : 'bg-green'}`} />
+                {showBefore ? 'Current State' : 'See Before →'}
+              </button>
+              <a
+                href="/sms-alerts"
+                target="_blank"
+                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted transition-all"
+              >
+                💬 SMS Alerts
+              </a>
+              <a
+                href="/email-digest"
+                target="_blank"
+                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted transition-all"
+              >
+                📬 Digest
+              </a>
+              <a
+                href="/kiosk"
+                target="_blank"
+                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted transition-all"
+              >
+                🖥 Kiosk
+              </a>
+              <a
+                href="/print-report"
+                target="_blank"
+                className="inline-flex items-center gap-1.5 rounded-md border border-border bg-card px-3 py-1.5 text-xs font-medium text-muted-foreground hover:bg-muted transition-all"
+              >
+                🖨 Report
+              </a>
+              <ImportLeadsDialog onImport={importLeads} />
+            </div>
           </div>
         </section>
 
-        <div className="grid grid-cols-2 gap-4 mb-8 md:grid-cols-4">
+        {showBefore ? (
+          <BeforeView leads={leads} total={leads.length} />
+        ) : (
+          <><div className="grid grid-cols-2 gap-4 mb-8 md:grid-cols-4">
           <MetricCard label="New Opportunities" value={opportunities} tone="lime" />
           <MetricCard label="Consultations" value={consultationsScheduled} tone="navy" />
           <MetricCard label="Contracts Signed" value={contractsSigned} tone="green" />
@@ -204,6 +264,9 @@ export default function OverviewPage() {
             </DashboardCardContent>
           </DashboardCard>
         </div>
+        </>
+      )}
+
       </main>
     </div>
   )

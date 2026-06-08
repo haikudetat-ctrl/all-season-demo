@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useAppData } from '@/lib/store'
 import Header from '@/components/header'
+import SettingsDialog from '@/components/settings-dialog'
 import type { LeadStage, Lead } from '@/lib/types'
 import {
   DashboardCard,
@@ -55,7 +56,7 @@ function daysSince(dateStr: string): string {
 const stageOptions = stages.map(s => ({ value: s.key, label: s.label }))
 
 export default function SalesPage() {
-  const { data, loaded, updateLead } = useAppData()
+  const { data, loaded, updateLead, updateProfile } = useAppData()
   const [selectedLead, setSelectedLead] = useState<Lead | null>(null)
   const [editNextAction, setEditNextAction] = useState('')
   const [editStage, setEditStage] = useState<LeadStage>('opportunity')
@@ -96,7 +97,10 @@ export default function SalesPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      <Header
+        profile={data.profile}
+        settingsButton={<SettingsDialog profile={data.profile} onSave={updateProfile} />}
+      />
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-2 gap-4 mb-6 md:grid-cols-4">
           <MetricCard label="Total Opportunities" value={totalLeads} tone="lime" />

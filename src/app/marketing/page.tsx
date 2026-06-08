@@ -3,6 +3,7 @@
 import { Fragment, useState } from 'react'
 import { useAppData } from '@/lib/store'
 import Header from '@/components/header'
+import SettingsDialog from '@/components/settings-dialog'
 import type { LeadSource } from '@/lib/types'
 import {
   DashboardCard,
@@ -29,7 +30,7 @@ function formatCurrency(n: number) {
 const SOURCES: LeadSource[] = ['Meta', 'Google Ads', 'Organic', 'Referral', 'Door Knocking', 'Home Shows', 'Website']
 
 export default function MarketingPage() {
-  const { data, loaded } = useAppData()
+  const { data, loaded, updateProfile } = useAppData()
   const [drillDown, setDrillDown] = useState<LeadSource | null>(null)
 
   if (!loaded || !data) {
@@ -76,7 +77,10 @@ export default function MarketingPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      <Header
+        profile={data.profile}
+        settingsButton={<SettingsDialog profile={data.profile} onSave={updateProfile} />}
+      />
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-2 gap-4 mb-6 md:grid-cols-5">
           <MetricCard label="Total Spend" value={formatCurrency(totals.spend)} tone="lime" />

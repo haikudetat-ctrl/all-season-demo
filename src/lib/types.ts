@@ -102,10 +102,18 @@ export interface SalesRep {
   conversionRate: number
 }
 
+export interface CompanyProfile {
+  companyName: string
+  ownerName: string
+  tagline: string
+  logoDataUrl?: string
+}
+
 export interface AppData {
   leads: Lead[]
   installs: InstallProject[]
   referrals: Referral[]
   marketing: MarketingRow[]
   reps: SalesRep[]
+  profile: CompanyProfile
 }

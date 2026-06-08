@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { useAppData } from '@/lib/store'
 import Header from '@/components/header'
+import SettingsDialog from '@/components/settings-dialog'
 import type { InstallStage, InstallProject } from '@/lib/types'
 import {
   DashboardCard,
@@ -87,7 +88,7 @@ const statusOptions: { value: InstallProject['status']; label: string }[] = [
 ]
 
 export default function InstallPage() {
-  const { data, loaded, updateInstall } = useAppData()
+  const { data, loaded, updateInstall, updateProfile } = useAppData()
   const [selected, setSelected] = useState<InstallProject | null>(null)
   const [editStage, setEditStage] = useState<InstallStage>('consultation')
   const [editStatus, setEditStatus] = useState<InstallProject['status']>('on_track')
@@ -124,7 +125,10 @@ export default function InstallPage() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      <Header
+        profile={data.profile}
+        settingsButton={<SettingsDialog profile={data.profile} onSave={updateProfile} />}
+      />
       <main className="flex-1 p-6 max-w-7xl mx-auto w-full">
         <div className="grid grid-cols-2 gap-3 mb-6 md:grid-cols-5">
           <MetricCard label="Total Projects" value={summary.total} tone="lime" />

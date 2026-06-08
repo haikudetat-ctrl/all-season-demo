@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect, useCallback } from 'react'
-import type { AppData, Lead, InstallProject, Referral } from './types'
+import type { AppData, CompanyProfile, Lead, InstallProject, Referral } from './types'
 import { generateSeedData } from './seed-data'
 
 const STORAGE_KEY = 'allseason-operations-data'
@@ -76,11 +76,32 @@ export function useAppData() {
     })
   }, [])
 
+  const importLeads = useCallback((newLeads: Lead[]) => {
+    setData(prev => {
+      if (!prev) return prev
+      const existingIds = new Set(prev.leads.map(l => l.id))
+      const uniqueNew = newLeads.filter(l => !existingIds.has(l.id))
+      const merged = [...uniqueNew, ...prev.leads]
+      const newData = { ...prev, leads: merged }
+      saveToStorage(newData)
+      return newData
+    })
+  }, [])
+
+  const updateProfile = useCallback((profile: CompanyProfile) => {
+    setData(prev => {
+      if (!prev) return prev
+      const newData = { ...prev, profile }
+      saveToStorage(newData)
+      return newData
+    })
+  }, [])
+
   const resetData = useCallback(() => {
     const seed = generateSeedData()
     saveToStorage(seed)
     setData(seed)
   }, [])
 
-  return { data, loaded, updateLead, updateInstall, updateReferral, resetData }
+  return { data, loaded, updateLead, updateInstall, updateReferral, importLeads, updateProfile, resetData }
 }

@@ -309,5 +309,10 @@ export function generateSeedData(): AppData {
     referrals: generateReferrals(),
     marketing: generateMarketingData(),
     reps,
+    profile: {
+      companyName: 'AllSeason Solar',
+      ownerName: 'Chris Miller',
+      tagline: 'Operations Center',
+    },
   }
 }
